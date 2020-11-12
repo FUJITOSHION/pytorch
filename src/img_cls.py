@@ -1,7 +1,7 @@
 import numpy as np
 import json
 from PIL import Image
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 import torch
 import torchvision
@@ -25,8 +25,38 @@ class BaseTransform():
         return self.base_transform(img)
 
 
+class Predictor():
+    def __init__(self, class_index):
+        self.class_index = class_index
+
+    def predict_max(self, out):
+        maxid = np.argmax(out.detach().numpy())
+        predcit_label_name = self.class_index[str(maxid)][1]
+        return predcit_label_name
+
+
 def main():
-    pass
+    net = models.vgg16(pretrained=True)
+    net.eval()
+
+    label_json = json.load(open('./data/imagenet_class_index.json', 'r'))
+    predictor = Predictor(label_json)
+
+    img_path = './data/dog.jpeg'
+    img = Image.open(img_path)
+
+    resize = 224
+    mean = (0.485, 0.456, 0.406)
+    std = (0.229, 0.224, 0.225)
+
+    transform = BaseTransform(resize, mean, std)
+    img_trans = transform(img)
+
+    inputs = img_trans.unsqueeze_(0)
+    out = net(inputs)
+    result = predictor.predict_max(out)
+
+    print(result)
 
 
 if __name__ == '__main__':
