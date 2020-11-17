@@ -7,6 +7,7 @@ $ pip install -r requirements.txt
 ```
 ## ch1
 ### 画像分類と転移学習
+- pytorchのdatasetは一つずつ取り出す`__getitem__`とファイル数を返す`__len__()`が必須
 ## ch2
 ### 物体検出
 ## ch3
